@@ -114,14 +114,14 @@ function showVideoConference() {
   videoChatContainer.style.display = 'block'
 }
 
-async function setLocalStream(mediaConstraints) {
-  try {
-    localStream = await navigator.mediaDevices.getUserMedia(mediaConstraints)
-    localVideoComponent.srcObject = localStream
-  } catch (error) {
-    console.error('Could not get user media', error)
-  }
-}
+// async function setLocalStream(mediaConstraints) {
+//   try {
+//     localStream = await navigator.mediaDevices.getUserMedia(mediaConstraints)
+//     localVideoComponent.srcObject = localStream
+//   } catch (error) {
+//     console.error('Could not get user media', error)
+//   }
+// }
 
 function addLocalTracks(rtcPeerConnection) {
   localStream.getTracks().forEach((track) => {
@@ -129,20 +129,20 @@ function addLocalTracks(rtcPeerConnection) {
   })
 }
 
-async function createOffer(rtcPeerConnection) {
-  try {
-    const sessionDescription = await rtcPeerConnection.createOffer()
-    rtcPeerConnection.setLocalDescription(sessionDescription)
+// async function createOffer(rtcPeerConnection) {
+//   try {
+//     const sessionDescription = await rtcPeerConnection.createOffer()
+//     rtcPeerConnection.setLocalDescription(sessionDescription)
     
-    socket.emit('webrtc_offer', {
-      type: 'webrtc_offer',
-      sdp: sessionDescription,
-      roomId,
-    })
-  } catch (error) {
-    console.error(error)
-  }
-}
+//     socket.emit('webrtc_offer', {
+//       type: 'webrtc_offer',
+//       sdp: sessionDescription,
+//       roomId,
+//     })
+//   } catch (error) {
+//     console.error(error)
+//   }
+// }
 
 async function createAnswer(rtcPeerConnection) {
   try {
@@ -173,3 +173,30 @@ function sendIceCandidate(event) {
     })
   }
 }
+
+async function setLocalStream(mediaConstraints) {
+  try {
+    // Request screen sharing instead of camera access
+    const displayMediaStream = await navigator.mediaDevices.getDisplayMedia(mediaConstraints);
+    localVideoComponent.srcObject = displayMediaStream;
+    localStream = displayMediaStream;
+  } catch (error) {
+    console.error('Could not get display media', error);
+  }
+}
+
+async function createOffer(rtcPeerConnection) {
+  try {
+    const sessionDescription = await rtcPeerConnection.createOffer();
+    rtcPeerConnection.setLocalDescription(sessionDescription);
+    
+    socket.emit('webrtc_offer', {
+      type: 'webrtc_offer',
+      sdp: sessionDescription,
+      roomId,
+    });
+  } catch (error) {
+    console.error(error);
+  }
+}
+
