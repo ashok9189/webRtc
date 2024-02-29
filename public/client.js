@@ -4,7 +4,7 @@ const roomInput = document.getElementById('room-input')
 const connectButton = document.getElementById('connect-button')
 
 const videoChatContainer = document.getElementById('video-chat-container')
-// const localVideoComponent = document.getElementById('local-video')
+const localVideoComponent = document.getElementById('local-video')
 const remoteVideoComponent = document.getElementById('remote-video')
 
 // Variables.
@@ -39,14 +39,14 @@ connectButton.addEventListener('click', () => {
 socket.on('room_created', async () => {
   console.log('Socket event callback: room_created')
 
-  // await setLocalStream(mediaConstraints)
+  await setLocalStream(mediaConstraints)
   isRoomCreator = true
 })
 
 socket.on('room_joined', async () => {
   console.log('Socket event callback: room_joined')
 
-  // await setLocalStream(mediaConstraints)
+  await setLocalStream(mediaConstraints)
   socket.emit('start_call', roomId)
 })
 
@@ -114,14 +114,14 @@ function showVideoConference() {
   videoChatContainer.style.display = 'block'
 }
 
-// async function setLocalStream(mediaConstraints) {
-//   try {
-//     localStream = await navigator.mediaDevices.getUserMedia(mediaConstraints)
-//     localVideoComponent.srcObject = localStream
-//   } catch (error) {
-//     console.error('Could not get user media', error)
-//   }
-// }
+async function setLocalStream(mediaConstraints) {
+  try {
+    localStream = await navigator.mediaDevices.getUserMedia(mediaConstraints)
+    localVideoComponent.srcObject = localStream
+  } catch (error) {
+    console.error('Could not get user media', error)
+  }
+}
 
 function addLocalTracks(rtcPeerConnection) {
   localStream.getTracks().forEach((track) => {
